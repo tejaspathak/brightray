@@ -54,6 +54,8 @@
       'browser/views/views_delegate.h',
       'browser/web_ui_controller_factory.cc',
       'browser/web_ui_controller_factory.h',
+      'browser/win/notification_presenter_linux.h',
+      'browser/win/notification_presenter_.cc',
       'common/application_info.h',
       'common/application_info_mac.mm',
       'common/application_info_win.cc',
