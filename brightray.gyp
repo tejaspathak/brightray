@@ -161,6 +161,14 @@
           ]
         }],  # OS=="mac"
         ['OS=="win"', {
+          'msvs_settings': {
+            'VCLinkerTool': {
+              'AdditionalDependencies': [
+                'runtimeobject.lib',
+                'windowsapp.lib'
+              ],
+            },
+          },
           'conditions': [
             ['libchromiumcontent_component', {
               # sandbox, base_static, devtools_discovery, devtools_http_handler,
@@ -195,7 +203,6 @@
                 'msvs_settings': {
                   'VCLinkerTool': {
                     'AdditionalDependencies': [
-                      'runtimeobject.lib',
                       'Shlwapi.lib',
                       'Crypt32.lib',
                       'advapi32.lib',

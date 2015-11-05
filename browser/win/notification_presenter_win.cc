@@ -26,13 +26,17 @@
 #include <wrl/client.h>
 #include <windows.ui.notifications.h>
 #include <wrl/implements.h>
+#include <winstring.h>
 #include "windows_toast_notification.h"
 
+#pragma comment(lib, "runtimeobject.lib")
+#pragma comment(lib, "Crypt32.lib")
+
+using namespace WinToasts;
 using namespace Microsoft::WRL;
 using namespace ABI::Windows::UI::Notifications;
 using namespace ABI::Windows::Data::Xml::Dom;
 using namespace ABI::Windows::Foundation;
-using namespace WinToasts;
 
 namespace brightray {
 
@@ -63,7 +67,7 @@ void NotificationPresenterWin::ShowNotification(
   char* img = NULL;
   
   WinToasts::WindowsToastNotification* wtn = new WinToasts::WindowsToastNotification();
-  //wtn->ShowNotification(title, msg, img);
+  wtn->ShowNotification(title, msg, img);
 }
 
 void NotificationPresenterWin::CancelNotification() {

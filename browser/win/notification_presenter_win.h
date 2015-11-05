@@ -10,7 +10,6 @@
 #include "browser/notification_presenter.h"
 
 #include <windows.h>
-#include <shellapi.h>
 
 namespace brightray {
 
