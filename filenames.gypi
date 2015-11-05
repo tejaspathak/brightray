@@ -63,6 +63,8 @@
       'browser/platform_notification_service_impl.h',
       'browser/linux/notification_presenter_linux.h',
       'browser/linux/notification_presenter_linux.cc',
+      'browser/win/windows_toast_notification.h',
+      'browser/win/windows_toast_notification.cc',
       'browser/win/notification_presenter_win.h',
       'browser/win/notification_presenter_win.cc',
       'browser/special_storage_policy.cc',

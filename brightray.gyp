@@ -178,6 +178,9 @@
               # Link with system libraries.
               'link_settings': {
                 'libraries': [
+                  'runtimeobject.lib',
+                  'Shlwapi.lib',
+                  'Crypt32.lib',
                   # content_browser.gypi:
                   '-lsensorsapi.lib',
                   '-lportabledeviceguids.lib',

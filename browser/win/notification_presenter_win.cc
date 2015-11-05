@@ -19,11 +19,22 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "base/win/windows_version.h"
 
+// Windows Header
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+#include <wrl/client.h>
+#include <windows.ui.notifications.h>
+#include <wrl/implements.h>
+#include "windows_toast_notification.h"
+
+using namespace Microsoft::WRL;
+using namespace ABI::Windows::UI::Notifications;
+using namespace ABI::Windows::Data::Xml::Dom;
+using namespace ABI::Windows::Foundation;
+using namespace WinToasts;
+
 namespace brightray {
-
-namespace {
-
-}  // namespace
 
 // static
 NotificationPresenter* NotificationPresenter::Create() {
@@ -37,12 +48,6 @@ NotificationPresenterWin::~NotificationPresenterWin() {
 }
 
 void NotificationPresenterWin::ShowNotification(
-  // https://msdn.microsoft.com/en-us/library/ee330740(v=VS.85).aspx
-  // To display a notification, you must have an icon in the notification area. 
-  // In certain cases, such as Microsoft Communicator or battery level, that icon will already be present. 
-  // In many other cases, however, you will add an icon to the notification area only as long as is needed to show the notification. 
-  // In either case, this is accomplished using the Shell_NotifyIcon function.
-
   const content::PlatformNotificationData& data,
   const SkBitmap& icon,
   scoped_ptr<content::DesktopNotificationDelegate> delegate_ptr,
@@ -51,39 +56,14 @@ void NotificationPresenterWin::ShowNotification(
   // Simple Fake Debugger, showing us what's going on
   FILE *out = fopen("C:\\Users\\feriese\\Desktop\\log.txt", "a");  
   fprintf(out, "%s", "Hi from notification!");  
-  fclose(out);  
+  fclose(out);
   
-  // Create Notification
-  UINT icon_id_ = 1;
-  HWND window_ = CreateWindow(0, 0, WS_POPUP, 0, 0, 0, 0, 0, 0, 0, 0);
-
-  NOTIFYICONDATA icon_data;
-
-  memset(&icon_data, 0, sizeof(NOTIFYICONDATA));
-  icon_data.cbSize = sizeof(NOTIFYICONDATA);
-  icon_data.hWnd = window_;
-  icon_data.uID = icon_id_;
-  icon_data.uFlags |= NIF_INFO;
-  icon_data.dwInfoFlags = NIIF_INFO;
+  WCHAR* title = L"Test";
+  WCHAR* msg = L"Test";;
+  char* img = NULL;
   
-  wcscpy_s(icon_data.szInfoTitle, data.title.c_str());
-  wcscpy_s(icon_data.szInfo, data.body.c_str());
-  icon_data.uTimeout = 0;
-
-  content::DesktopNotificationDelegate* delegate = delegate_ptr.release();
-  delegate->NotificationDisplayed();
-  
-  // logging::LogMessage("CONSOLE", 0, 0).stream() << "Test";
-  // LOG(ERROR) << "blah";
-  //   /*
-  //   base::win::Version win_version = base::win::GetVersion();
-  //   if (!icon.IsEmpty() && win_version != base::win::VERSION_PRE_XP) {
-  //     balloon_icon_.Set(IconUtil::CreateHICONFromSkBitmap(icon.AsBitmap()));
-  //     icon_data.hBalloonIcon = balloon_icon_.Get();
-  //     icon_data.dwInfoFlags = NIIF_USER | NIIF_LARGE_ICON;
-  //   }*/
-
-  //   Shell_NotifyIcon(NIM_MODIFY, &icon_data);
+  WinToasts::WindowsToastNotification* wtn = new WinToasts::WindowsToastNotification();
+  //wtn->ShowNotification(title, msg, img);
 }
 
 void NotificationPresenterWin::CancelNotification() {
