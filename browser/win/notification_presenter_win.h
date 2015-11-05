@@ -9,16 +9,8 @@
 #include "base/compiler_specific.h"
 #include "browser/notification_presenter.h"
 
-#include "windows_headers.h"
-#include "string_reference_wrapper.h"
-#include "toast_event_handler.h"
-
-using namespace Microsoft::WRL;
-using namespace ABI::Windows::UI::Notifications;
-using namespace ABI::Windows::Data::Xml::Dom;
-using namespace Windows::Foundation;
-
-const wchar_t AppId[] = L"Electron.Windows.DesktopToast";
+#include <windows.h>
+#include <shellapi.h>
 
 namespace brightray {
 
@@ -40,32 +32,6 @@ class NotificationPresenterWin : public NotificationPresenter {
 
   void CancelNotification();
   void DeleteNotification();
-  
-  HRESULT DisplayToast();
-  HRESULT CreateToastXml(
-  _In_ ABI::Windows::UI::Notifications::IToastNotificationManagerStatics *toastManager, 
-  _Outptr_ ABI::Windows::Data::Xml::Dom::IXmlDocument **xml
-  );
-
-  HRESULT CreateToast(
-  _In_ ABI::Windows::UI::Notifications::IToastNotificationManagerStatics *toastManager, 
-  _In_ ABI::Windows::Data::Xml::Dom::IXmlDocument *xml
-  );
-  HRESULT SetImageSrc(
-  _In_z_ wchar_t *imagePath, 
-  _In_ ABI::Windows::Data::Xml::Dom::IXmlDocument *toastXml
-  );
-  HRESULT SetTextValues(
-  _In_reads_(textValuesCount) wchar_t **textValues, 
-  _In_ UINT32 textValuesCount, 
-  _In_reads_(textValuesCount) UINT32 *textValuesLengths, 
-  _In_ ABI::Windows::Data::Xml::Dom::IXmlDocument *toastXml
-  );
-  HRESULT SetNodeValueString(
-  _In_ HSTRING onputString,
-  _In_ ABI::Windows::Data::Xml::Dom::IXmlNode *node, 
-  _In_ ABI::Windows::Data::Xml::Dom::IXmlDocument *xml
-  );
 
 };
 

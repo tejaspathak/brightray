@@ -196,6 +196,8 @@
                   'VCLinkerTool': {
                     'AdditionalDependencies': [
                       'runtimeobject.lib',
+                      'Shlwapi.lib',
+                      'Crypt32.lib',
                       'advapi32.lib',
                       'dbghelp.lib',
                       'delayimp.lib',
@@ -207,7 +209,7 @@
                       'user32.lib',
                       'usp10.lib',
                       'version.lib',
-                      'winspool.lib'
+                      'winspool.lib',
                     ],
                     'DelayLoadDLLs': [
                       # content_common.gypi:
@@ -221,9 +223,6 @@
                       'BluetoothApis.dll',
                       'Bthprops.cpl',
                       'setupapi.dll',
-                      'API-MS-WIN-CORE-WINRT-ERROR-L1-1-0.DLL',
-                      'API-MS-WIN-CORE-WINRT-L1-1-0.DLL',
-                      'API-MS-WIN-CORE-WINRT-STRING-L1-1-0.DLL'
                     ],
                   },
                 },
