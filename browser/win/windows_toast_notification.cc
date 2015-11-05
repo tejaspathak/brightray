@@ -35,7 +35,7 @@ WindowsToastNotification::~WindowsToastNotification()
         delete m_tempFilePath;
     }
 
-    m_cbFn.~Persistent();
+    // m_cbFn.~Persistent();
 }
 
 
@@ -95,7 +95,7 @@ void WindowsToastNotification::ShowNotification(const WCHAR* title, const WCHAR*
         hr = notifier->Show(toast.Get());
         BREAK_IF_BAD(hr);
 
-        m_cbFn.Reset(Isolate::GetCurrent(), cbFn);
+        // m_cbFn.Reset(Isolate::GetCurrent(), cbFn);
 
         //todo:
         //cbPtr->NotificationDisplayed();
@@ -121,10 +121,10 @@ void WindowsToastNotification::ShowNotification(const WCHAR* title, const WCHAR*
 
 void WindowsToastNotification::NotificationClicked()
 {
-    Local<Function> fn = Local<Function>::New(Isolate::GetCurrent(), m_cbFn);
-    Handle<Value> args[1];
-    fn->Call(Isolate::GetCurrent()->GetCurrentContext()->Global(), 0, args);
-    delete this;
+    // Local<Function> fn = Local<Function>::New(Isolate::GetCurrent(), m_cbFn);
+    // Handle<Value> args[1];
+    // fn->Call(Isolate::GetCurrent()->GetCurrentContext()->Global(), 0, args);
+    // delete this;
 }
 
 
@@ -389,9 +389,9 @@ HRESULT WindowsToastNotification::ConvertBase64DataToImage(const char* base64, B
     HRESULT hr = E_FAIL;
     *buffLen = 0;
     DWORD reqSize;
-    if (CryptStringToBinary(base64, 0, CRYPT_STRING_BASE64, NULL, &reqSize, NULL, NULL)){
+    if (CryptStringToBinary((LPCWSTR)base64, 0, CRYPT_STRING_BASE64, NULL, &reqSize, NULL, NULL)){
         *buff = new BYTE[reqSize];
-        if (CryptStringToBinary(base64, 0, CRYPT_STRING_BASE64, *buff, &reqSize, NULL, NULL)){
+        if (CryptStringToBinary((LPCWSTR)base64, 0, CRYPT_STRING_BASE64, *buff, &reqSize, NULL, NULL)){
             *buffLen = reqSize;
             hr = S_OK;
         }
@@ -414,7 +414,7 @@ HRESULT WindowsToastNotification::WriteToFile(BYTE* buff, DWORD buffLen)
 
         m_tempFilePath = new char[MAX_PATH];
         sprintf(m_tempFilePath, "%s\\%S", s_tempDirPath, randomName);
-        HANDLE file = CreateFile(m_tempFilePath, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+        HANDLE file = CreateFile((LPCWSTR)m_tempFilePath, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
         if (file != INVALID_HANDLE_VALUE){
             DWORD bytesWritten;
             if (WriteFile(file, buff, buffLen, &bytesWritten, NULL)){
@@ -442,7 +442,7 @@ HRESULT WindowsToastNotification::EnsureTempDir()
 {
     //Check for the Dir already existing or easy creation
     HRESULT hr = E_FAIL;
-    if (CreateDirectory(s_tempDirPath, NULL) || GetLastError() == ERROR_ALREADY_EXISTS){
+    if (CreateDirectory((LPCWSTR)s_tempDirPath, NULL) || GetLastError() == ERROR_ALREADY_EXISTS){
         hr = S_OK;
     }
     else{
@@ -450,14 +450,14 @@ HRESULT WindowsToastNotification::EnsureTempDir()
         //4th character.  ie. "c:\path\to\temp\dir"
 
         //It's possible that multiple directories need to be created.
-        for (int i = 3; i < strlen(s_tempDirPath); i++){
+        for (int i = 3; i < ARRAYSIZE(s_tempDirPath); i++) {
             char c = s_tempDirPath[i];
             if (c == '\\'){
                 //Substring until this char
                 char* temp = new char[i + 1];
                 strncpy(temp, s_tempDirPath, i);
                 temp[i] = 0;
-                if (!CreateDirectory(temp, NULL) && GetLastError() != ERROR_ALREADY_EXISTS){
+                if (!CreateDirectory((LPCWSTR)temp, NULL) && GetLastError() != ERROR_ALREADY_EXISTS){
                     delete temp;
                     return hr;
                 }
@@ -467,7 +467,7 @@ HRESULT WindowsToastNotification::EnsureTempDir()
         }
 
         //Try to create the full path one more time.  This will take care of paths that don't end with a slash
-        if (CreateDirectory(s_tempDirPath, NULL) || GetLastError() == ERROR_ALREADY_EXISTS){
+        if (CreateDirectory((LPCWSTR)s_tempDirPath, NULL) || GetLastError() == ERROR_ALREADY_EXISTS){
             hr = S_OK;
         }
     }
@@ -478,7 +478,7 @@ HRESULT WindowsToastNotification::EnsureTempDir()
 
 HRESULT WindowsToastNotification::DeleteTempImageFile()
 {
-    if (DeleteFile(m_tempFilePath)){
+    if (DeleteFile((LPCWSTR)m_tempFilePath)){
         return S_OK;
     }
 
@@ -490,13 +490,13 @@ HRESULT WindowsToastNotification::EnsureShortcut()
 {
     HRESULT hr = E_FAIL;
     char shortcut[MAX_PATH];
-    DWORD charsWritten = GetEnvironmentVariable("APPDATA", shortcut, MAX_PATH);
+    DWORD charsWritten = GetEnvironmentVariable(L"APPDATA", (LPWSTR)shortcut, MAX_PATH);
     if (charsWritten > 0) {
         char shortcutCat[MAX_PATH];
         sprintf(shortcutCat, SHORTCUT_FORMAT, s_appName);
         errno_t concatErr = strcat_s(shortcut, ARRAYSIZE(shortcut), shortcutCat);
         if (concatErr == 0) {
-            DWORD attr = GetFileAttributes(shortcut);
+            DWORD attr = GetFileAttributes((LPCWSTR)shortcut);
             bool exists = attr < 0xFFFFFFF;
             if (exists){
                 hr = S_OK;
@@ -517,7 +517,7 @@ HRESULT WindowsToastNotification::CreateShortcut(WCHAR* path)
 {
     HRESULT hr = E_FAIL;
     char exePath[MAX_PATH];
-    DWORD charsWritten = GetModuleFileNameEx(GetCurrentProcess(), nullptr, exePath, ARRAYSIZE(exePath));
+    DWORD charsWritten = GetModuleFileNameEx(GetCurrentProcess(), nullptr, (LPWSTR)exePath, ARRAYSIZE(exePath));
     if (charsWritten > 0) {
         PROPVARIANT propVariant;
         ComPtr<IShellLink> shellLink;
@@ -525,7 +525,7 @@ HRESULT WindowsToastNotification::CreateShortcut(WCHAR* path)
         do{
             BREAK_IF_BAD(hr);
 
-            hr = shellLink->SetPath(exePath);
+            hr = shellLink->SetPath((LPCWSTR)exePath);
             BREAK_IF_BAD(hr);
 
             ComPtr<IPropertyStore> propStore;
