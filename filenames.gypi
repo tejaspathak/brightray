@@ -65,6 +65,8 @@
       'browser/linux/notification_presenter_linux.cc',
       'browser/win/notification_presenter_win.h',
       'browser/win/notification_presenter_win.cc',
+      'browser/win/windows_toast_notification.h',
+      'browser/win/windows_toast_notification.cc',
       'browser/special_storage_policy.cc',
       'browser/special_storage_policy.h',
       'browser/url_request_context_getter.cc',
